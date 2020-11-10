@@ -1,25 +1,46 @@
-import logo from './logo.svg';
+import React, { Component } from 'react'
+
+import { CardList } from './components/card-list/card-list.component.jsx';
+import  { SearchBox } from './components/search-box/search-box.component';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+  class App extends Component {
+    constructor() {
+      super();
+      this.state = {
+        players:[],
+        searchField:''
+      }
+    }
+
+    componentDidMount() {
+      fetch('https://liga1-db.herokuapp.com/jucatori')
+      .then(response => response.json())
+      .then(jucatori=> this.setState({ players: jucatori }));
+    }
+
+    handleChange = e => {
+    this.setState({ searchField: e.target.value });
+  };
+
+    render() {
+      const { players, searchField } = this.state;
+    
+    const filteredPlayers = players.filter(player =>
+      player.fullName.toLowerCase().includes(searchField.toLowerCase())
+      );
+   
+      return (
+      <div className="App">
+      <h1>Liga  1 App</h1>
+      <SearchBox
+              placeholder='search players'
+              handleChange={this.handleChange}
+             />
+        <CardList players={filteredPlayers} />
+      </div>
+    );
+   }
+ }
 
 export default App;
